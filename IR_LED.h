@@ -28,6 +28,7 @@ private:
     std::deque<uint8_t> dataQueue;
 
     void transmit(uint8_t data){
+        txStart();
         // Loop through each bit and TX a 1 or 0
         for(auto i = 0; i < 8; i++){
             (data >> i) & 1 ? txOne() : txZero();
@@ -45,5 +46,11 @@ private:
     void txZero(){
         outpin.setHigh(); // Just in case for some reason you end low.
         delay_us(500); // RTOS sleep 500 us
+    }
+
+    void txStart(){
+        // I actually dont know the start bit for the IR remote. This needs to be updated. 
+        outpin.setLow();
+        outpin.setHigh();
     }
 }
