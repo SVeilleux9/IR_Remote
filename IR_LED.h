@@ -51,8 +51,8 @@ private:
     void txStart(){
         // I actually dont know the start bit for the IR remote. This needs to be updated. 
         outpin.setLow();
-        delay_us(150);
+        delay_us(100);
         outpin.setHigh();
-        delay_us(150);
+        delay_us(100);
     }
 }
