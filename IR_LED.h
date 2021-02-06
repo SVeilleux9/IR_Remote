@@ -11,31 +11,39 @@ public:
         dataQueue.push_back(data);
     }
 
+    void run(){
+        
+        while(!dataQueue.empty()){
+            uint8_t nextData = dataQueue.front();
+            dataQueue.pop_front(); // FIFO
+
+            transmit(nextData);
+        }
+    
+        return;
+    }
+
 private:
     Pin outpin;
     std::deque<uint8_t> dataQueue;
 
-
-    void run(){
-        // early return if nothing to do.
-        if(dataQueue.empty()){
-            return;
+    void transmit(uint8_t data){
+        // Loop through each bit and TX a 1 or 0
+        for(auto i = 0; i < 8; i++){
+            (data >> i) & 1 ? txOne() : txZero();
         }
-
-        uint8_t nextData = dataQueue.front();
-        dataQueue.pop_front();
-
-        if(nextData == 1){
-            for(size_t i = 0; i < 22; i++){
-                outpin.toggle(); // This would def lead to a bug. 
-                delay_us(26); // RTOS sleep 1/38 kHz (this is actually 38.5 kHz close enough)
-            }
-        }else{
-            outpin.setHigh(); // Just in case for some reason you end low.
-            delay_us(500); // RTOS sleep 500 us
-        }    
-
-        return;
     }
 
+    void txOne(){
+        for(size_t i = 0; i < 22; i++){
+            outpin.toggle(); // This would def lead to a bug. 
+            delay_us(26); // RTOS sleep 1/38 kHz (this is actually 38.5 kHz close enough)
+        }
+        outpin.setHigh(); // just to double check :)
+    }
+
+    void txZero(){
+        outpin.setHigh(); // Just in case for some reason you end low.
+        delay_us(500); // RTOS sleep 500 us
+    }
 }
